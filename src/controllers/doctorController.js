@@ -49,3 +49,14 @@ exports.accessMedicalRecords = async (req, res) => {
         res.status(500).json({ error: true, message: 'Failed to retrieve medical records.' });
     }
 };
+
+exports.downloadMedicalRecord = async (req, res) => {
+    const { patientId, filename } = req.query;
+    try {
+        const fileStream = await doctorService.downloadMedicalRecord(patientId, filename);
+        fileStream.pipe(res); // Stream the file to the client
+    } catch (error) {
+        console.error('Error downloading medical record:', error);
+        res.status(500).json({ error: true, message: 'Failed to download medical record.' });
+    }
+};

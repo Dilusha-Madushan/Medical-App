@@ -325,7 +325,7 @@ router.get('/medical-records', patientController.getMedicalRecords);
  *       500:
  *         description: Failed to download the file.
  */
-router.get('/medical-records/download', patientController.downloadMedicalRecord);
+router.get('/medical-records/download/:id', patientController.downloadMedicalRecord);
 
 router.get('/appointments', patientController.getAllAppointments);
 

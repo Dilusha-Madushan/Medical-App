@@ -117,9 +117,9 @@ exports.getMedicalRecords = async (req, res) => {
 };
 
 exports.downloadMedicalRecord = async (req, res) => {
-    const { filename } = req.query;
+    const { patientId, filename } = req.query;
     try {
-        const fileStream = await patientService.downloadMedicalRecord(req.user.uid, filename);
+        const fileStream = await patientService.downloadMedicalRecord(patientId, filename);
         fileStream.pipe(res); // Stream the file to the client
     } catch (error) {
         console.error('Error downloading medical record:', error);

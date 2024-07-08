@@ -45,3 +45,7 @@ exports.fetchMedicalRecords = async (patientId, doctorId) => {
         throw new Error('Service error: Unable to access medical records.');
     }
 };
+
+exports.downloadMedicalRecord = async (patientId, filename) => {
+    return await medicalRecordModel.getMedicalRecord(patientId, filename);
+};
