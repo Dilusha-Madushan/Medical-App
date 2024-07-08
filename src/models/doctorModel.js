@@ -20,9 +20,13 @@ exports.getDoctorById = async (doctorId) => {
     }
 };
 
-exports.getAllDoctors = async (name, category) => {
+exports.getAllDoctors = async (id, name, category) => {
     let query = doctorCollection;
 
+    if (id) {
+        const doc = await doctorCollection.doc(doctorId).get();
+        return doc;
+    }
     if (name) query = query.where('name', '==', name);
     if (category) query = query.where('title', '==', capitalizeFirstLetter(category));
 
