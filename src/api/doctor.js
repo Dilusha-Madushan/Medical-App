@@ -60,7 +60,7 @@ router.get('/appointments', doctorController.listAppointments);
  *       403:
  *         description: Forbidden if the user is not a doctor.
  */
-router.put('/appointments/decline/:id', doctorController.declineAppointment);
+router.put('/appointments/decline/:id', doctorController.updateAppointment);
 
 /**
  * @openapi

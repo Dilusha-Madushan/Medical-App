@@ -1,4 +1,4 @@
-const { registerUser, authenticateUser } = require('../services/userService');
+const { registerUser, authenticateUser, getAuthenticateUser } = require('../services/userService');
 
 // Controller for registering a patient
 exports.registerPatient = async (req, res) => {

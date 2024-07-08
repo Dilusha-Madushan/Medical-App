@@ -7,9 +7,7 @@ exports.verifyToken = async (req, res, next) => {
     return res.status(403).send({ error: true, message: "No token provided." });
   }
   try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    console.log(decodedToken)
-    req.user = decodedToken.user_id;
+    req.user = decodedToken.token;
     next();
   } catch (error) {
     res.status(403).send({ message: "Invalid token.", error: true });

@@ -37,6 +37,7 @@ exports.checkForConflictingAppointments = async (doctorId, date, startTime) => {
 exports.getAppointmentsByDoctor = async (doctorId) => {
     const snapshot = await db.collection('appointments')
         .where('doctorId', '==', doctorId)
+        .where('status', '!=', 'ended')
         .orderBy('date', 'desc')
         .get();
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

@@ -15,7 +15,7 @@ exports.listDoctors = async (req, res) => {
 exports.bookAppointment = async (req, res) => {
     const { doctorId, date, time } = req.body;
     try {
-        const result = await patientService.bookAppointment(req.user.uid, doctorId, date, time);
+        const result = await patientService.bookAppointment(req.user.uid, doctorId, date, time, file);
         if (result.error) {
             throw new Error(result.message);
         }
@@ -42,7 +42,7 @@ exports.getAllAppointments = async (req, res) => {
 exports.getAppointment = async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await patientService.getAppointment(req.user.uid, id);
+        const result = await patientService.getAppointment(req.user, id);
         if (result.error) {
             throw new Error(result.message);
         }

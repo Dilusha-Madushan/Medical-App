@@ -2,7 +2,7 @@ const doctorService = require('../services/doctorService');
 
 exports.listAppointments = async (req, res) => {
     try {
-        const appointments = await doctorService.fetchAppointments(req.user.id);
+        const appointments = await doctorService.fetchAppointments(req.user);
         res.status(200).json({ error: false, data: appointments });
     } catch (error) {
         console.error('Error listing appointments:', error);
@@ -13,7 +13,7 @@ exports.listAppointments = async (req, res) => {
 exports.getAppointment = async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await doctorService.getAppointment(req.user.uid, id);
+        const result = await doctorService.getAppointment(req.user, id);
         if (result.error) {
             throw new Error(result.message);
         }
@@ -24,7 +24,7 @@ exports.getAppointment = async (req, res) => {
     }
 };
 
-exports.declineAppointment = async (req, res) => {
+exports.updateAppointment = async (req, res) => {
     const { id } = req.params;
     try {
         await doctorService.declineAppointment(id);
