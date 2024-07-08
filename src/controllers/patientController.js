@@ -13,9 +13,10 @@ exports.listDoctors = async (req, res) => {
 };
 
 exports.bookAppointment = async (req, res) => {
-    const { doctorId, date, time } = req.body;
+    const { doctorId, date, time, description } = req.body;
+    const { file } = req
     try {
-        const result = await patientService.bookAppointment(req.user.uid, doctorId, date, time, file);
+        const result = await patientService.bookAppointment(req.user, doctorId, date, time, description, file);
         if (result.error) {
             throw new Error(result.message);
         }

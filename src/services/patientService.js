@@ -47,7 +47,8 @@ exports.bookAppointment = async (patientId, doctorId, date, time, file) => {
             time: appointmentStart.toISOString(),
             endTime: appointmentEnd.toISOString(),
             status: 'pending',
-            fileName: fileName
+            fileName: fileName,
+            description: description
         });
 
         return { error: false, data: { appointmentId: appointment.id, status: appointment.status } };
