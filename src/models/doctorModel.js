@@ -20,14 +20,14 @@ exports.getDoctorById = async (doctorId) => {
     }
 };
 
-exports.getAllDoctors = async ({ page=1, limit=10, name, category }) => {
+exports.getAllDoctors = async (name, category) => {
     let query = doctorCollection;
 
     if (name) query = query.where('name', '==', name);
     if (category) query = query.where('title', '==', capitalizeFirstLetter(category));
 
-    const offset = (page - 1) * limit;
-    const snapshot = await query.offset(offset).limit(limit).get();
+    // const offset = (page - 1) * limit;
+    const snapshot = await query.get();
     const doctors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const total = (await query.get()).size;
 

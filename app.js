@@ -9,7 +9,7 @@ const doctorRoutes = require('./src/api/doctor');
 const { swaggerDocs } = require('./src/config/swaggerConfig'); // Import Swagger configuration
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(cors({
   origin: 'http://localhost:3000'

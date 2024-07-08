@@ -3,9 +3,9 @@ const doctorModel = require('../models/doctorModel');
 const appointmentModel = require('../models/appointmentModel');
 const medicalRecordModel = require('../models/medicalRecordModel');
 
-exports.listAvailableDoctors = async () => {
+exports.listAvailableDoctors = async (name, category) => {
     try {
-        return await doctorModel.getAllDoctors();
+        return await doctorModel.getAllDoctors(name, category);
     } catch (error) {
         console.error('Error fetching doctors:', error);
         throw new Error('Service failed to fetch doctors.');

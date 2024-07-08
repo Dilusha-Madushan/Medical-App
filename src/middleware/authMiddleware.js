@@ -8,7 +8,8 @@ exports.verifyToken = async (req, res, next) => {
   }
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
-    req.user = decodedToken;
+    console.log(decodedToken)
+    req.user = decodedToken.user_id;
     next();
   } catch (error) {
     res.status(403).send({ message: "Invalid token.", error: true });

@@ -3,7 +3,8 @@ const patientService = require('../services/patientService');
 exports.listDoctors = async (req, res) => {
     try {
         console.log("Came 1")
-        const doctors = await patientService.listAvailableDoctors();
+        const { name, category } = req.params;
+        const doctors = await patientService.listAvailableDoctors(name, category);
         res.status(200).json({ error: false, data: doctors });
     } catch (error) {
         console.error('Error listing doctors:', error);
