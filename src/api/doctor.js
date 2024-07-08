@@ -5,7 +5,7 @@ const { verifyToken } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
 
 // Middleware to ensure the user is authenticated and is a doctor
-router.use(verifyToken, requireRole('doctor'));
+router.use(verifyToken);
 
 /**
  * @openapi
