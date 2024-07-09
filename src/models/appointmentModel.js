@@ -1,5 +1,22 @@
 const { db } = require('../config/firebaseConfig');
 
+const getUserFirstName = async (userId) => {
+    const userSnapshot = await db.collection('users').doc(userId).get();
+    if (userSnapshot.exists) {
+        return userSnapshot.data().firstName;
+    }
+    return null;
+};
+
+const getDoctorName = async (doctorId) => {
+    const userSnapshot = await db.collection('doctors').doc(doctorId).get();
+    if (userSnapshot.exists) {
+        return userSnapshot.data().name;
+    }
+    return null;
+};
+
+
 exports.countActiveAppointments = async () => {
     const snapshot = await db.collection('appointments').where('status', '!=', 'ended').get();
     return snapshot.size;
@@ -37,39 +54,60 @@ exports.checkForConflictingAppointments = async (doctorId, date, startTime) => {
 exports.getAppointmentsByDoctor = async (doctorId) => {
     const snapshot = await db.collection('appointments')
         .where('doctorId', '==', doctorId)
-        .where('status', '!=', 'ended')
         .get();
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        return data.sort((a, b) => new Date(a.appointmentStart) - new Date(b.appointmentStart));
+
+    const data = await Promise.all(snapshot.docs.map(async (doc) => {
+        const appointment = { id: doc.id, ...doc.data() };
+        if (appointment.status != 'ended'){
+            appointment.patientName = await getUserFirstName(appointment.patientId);
+            return appointment;
+        }
+    }));
+
+    return data.sort((a, b) => new Date(a.appointmentStart) - new Date(b.appointmentStart));
 };
 
 exports.getAppointmentsByPatient = async (patientId) => {
     const snapshot = await db.collection('appointments')
         .where('patientId', '==', patientId)
-        .where('status', '!=', 'ended')
         .get();
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    console.log("came 2")
+
+    const data = await Promise.all(snapshot.docs.map(async (doc) => {
+        const appointment = { id: doc.id, ...doc.data() };
+        if (appointment.status != 'ended'){
+            appointment.doctorName = await getDoctorName(appointment.doctorId);
+            return appointment;
+        }
+        
+    }));
+
     return data.sort((a, b) => new Date(a.appointmentStart) - new Date(b.appointmentStart));
 };
 
+
 exports.getAppointmentByPatient = async (patientId, appointmentId) => {
-    const appointment = await db.collection('appointments').doc(appointmentId).get()
-    if (appointment) {
-        if (appointment.patientId == patientId){
-            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const appointmentDoc = await db.collection('appointments').doc(appointmentId).get();
+    if (appointmentDoc.exists) {
+        const appointment = appointmentDoc.data();
+        if (appointment.patientId === patientId) {
+            appointment.doctorName = await getDoctorName(appointment.doctorId);
+            return { id: appointmentDoc.id, ...appointment };
         }
     }
-    return NaN
-    
+    return null;
 };
 
+
 exports.getAppointmentByDoctor = async (doctorId, appointmentId) => {
-    const appointment = await db.collection('appointments').doc(appointmentId).get()
-    if (appointment) {
-        if (appointment.doctorId == doctorId){
-            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const appointmentDoc = await db.collection('appointments').doc(appointmentId).get();
+    if (appointmentDoc.exists) {
+        const appointment = appointmentDoc.data();
+        if (appointment.doctorId === doctorId) {
+            appointment.patientName = await getUserFirstName(appointment.patientId);
+            return { id: appointmentDoc.id, ...appointment };
         }
     }
-    return NaN
-    
+    return null;
 };
