@@ -21,10 +21,10 @@ exports.getAppointment = async (doctorId, appointmentId) => {
     }
 };
 
-exports.declineAppointment = async (appointmentId) => {
+exports.updateAppointment = async (appointmentId, status) => {
     try {
         // Update the appointment status to 'declined'
-        await appointmentModel.updateAppointmentStatus(appointmentId, 'declined');
+        await appointmentModel.updateAppointmentStatus(appointmentId, status);
     } catch (error) {
         console.error('Error declining appointment:', error);
         throw new Error('Service error: Unable to decline appointment.');

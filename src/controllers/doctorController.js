@@ -17,7 +17,7 @@ exports.getAppointment = async (req, res) => {
         if (result.error) {
             throw new Error(result.message);
         }
-        res.status(201).json({ error: false, data: { message: 'Appointments fecthed successfully', appointmentId: result.id } });
+        res.status(201).json(result);
     } catch (error) {
         console.error('Error fetching appointment:', error);
         res.status(500).json({ error: true, message: error.message || 'Failed to book appointments.' });
@@ -26,12 +26,13 @@ exports.getAppointment = async (req, res) => {
 
 exports.updateAppointment = async (req, res) => {
     const { id } = req.params;
+    const {status} = req.body;
     try {
-        await doctorService.declineAppointment(id);
-        res.status(200).json({ error: false, data: { message: 'Appointment declined successfully.' } });
+        await doctorService.updateAppointment(id, status);
+        res.status(200).json({ error: false, data: { message: 'Appointment update successfully.' } });
     } catch (error) {
-        console.error('Error declining appointment:', error);
-        res.status(500).json({ error: true, message: 'Failed to decline appointment.' });
+        console.error('Error update appointment:', error);
+        res.status(500).json({ error: true, message: 'Failed to update appointment.' });
     }
 };
 

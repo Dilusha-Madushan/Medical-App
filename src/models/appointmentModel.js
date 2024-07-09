@@ -38,14 +38,15 @@ exports.getAppointmentsByDoctor = async (doctorId) => {
     const snapshot = await db.collection('appointments')
         .where('doctorId', '==', doctorId)
         .where('status', '!=', 'ended')
-        .orderBy('date', 'desc')
         .get();
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return data.sort((a, b) => new Date(a.appointmentStart) - new Date(b.appointmentStart));
 };
 
 exports.getAppointmentsByPatient = async (patientId) => {
     const snapshot = await db.collection('appointments')
         .where('patientId', '==', patientId)
+        .where('status', '!=', 'ended')
         .get();
     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     return data.sort((a, b) => new Date(a.appointmentStart) - new Date(b.appointmentStart));

@@ -31,7 +31,7 @@ router.use(verifyToken);
  *       403:
  *         description: Forbidden if the user is not a doctor.
  */
-router.get('/appointments', doctorController.listAppointments);
+router.get('/appointments/all', doctorController.listAppointments);
 
 /**
  * @openapi
@@ -60,7 +60,7 @@ router.get('/appointments', doctorController.listAppointments);
  *       403:
  *         description: Forbidden if the user is not a doctor.
  */
-router.put('/appointments/decline/:id', doctorController.updateAppointment);
+router.put('/appointments/update/:id', doctorController.updateAppointment);
 
 /**
  * @openapi
@@ -94,5 +94,16 @@ router.get('/medical-records/:patientId', doctorController.accessMedicalRecords)
 router.get('/appointments/:id', doctorController.getAppointment);
 
 router.get('/medical-records/download', doctorController.downloadMedicalRecord);
+
+router.get('/file/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '../../public/uploads', filename);
+  
+    res.download(filePath, (err) => {
+      if (err) {
+        res.status(404).json({ error: true, message: 'File not found' });
+      }
+    });
+  });
 
 module.exports = router;
