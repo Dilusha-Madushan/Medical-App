@@ -3,9 +3,29 @@ const router = express.Router();
 const doctorController = require('../controllers/doctorController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
+const multer = require('multer');
+const path = require('path');
 
 // Middleware to ensure the user is authenticated and is a doctor
 router.use(verifyToken);
+
+
+
+// Middleware to ensure the user is authenticated and is a patient
+router.use(verifyToken);
+
+// Set up storage engine with multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + file.originalname;
+    cb(null, uniqueSuffix);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 /**
  * @openapi
