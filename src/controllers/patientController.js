@@ -14,9 +14,10 @@ exports.listDoctors = async (req, res) => {
 
 exports.bookAppointment = async (req, res) => {
     const { doctorId, date, time, description } = req.body;
-    const { file } = req
+    const fileName = req.file ? req.file.filename : null;
+    // console.log(req.body , fileName)
     try {
-        const result = await patientService.bookAppointment(req.user, doctorId, date, time, description, file);
+        const result = await patientService.bookAppointment(req.user, doctorId, date, time, description, fileName);
         if (result.error) {
             throw new Error(result.message);
         }
@@ -29,11 +30,12 @@ exports.bookAppointment = async (req, res) => {
 
 exports.getAllAppointments = async (req, res) => {
     try {
-        const result = await patientService.getAllAppointments(req.user.uid);
+        console.log("get all appointments")
+        const result = await patientService.getAllAppointments(req.user);
         if (result.error) {
             throw new Error(result.message);
         }
-        res.status(201).json({ error: false, data: { message: 'Appointments fecthed successfully', appointmentId: result.id } });
+        res.status(201).json(result);
     } catch (error) {
         console.error('Error fetching appointment:', error);
         res.status(500).json({ error: true, message: error.message || 'Failed to book appointments.' });

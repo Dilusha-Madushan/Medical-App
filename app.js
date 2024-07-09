@@ -1,3 +1,12 @@
+const fs = require('fs');
+const path = require('path');
+
+// Ensure the uploads directory exists
+const uploadsDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -17,6 +26,8 @@ app.use(cors({
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
+
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Use authentication routes
 app.use('/api/auth', authRoutes);

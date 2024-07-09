@@ -12,11 +12,25 @@ exports.listAvailableDoctors = async (id, name, category) => {
     }
 };
 
-exports.bookAppointment = async (patientId, doctorId, date, time, file) => {
+exports.bookAppointment = async (patientId, doctorId, date, time, description, fileName) => {
     try {
         // Convert date and time to a JavaScript Date object
-        const appointmentStart = new Date(`${date}T${time}`);
-        const appointmentEnd = new Date(appointmentStart.getTime() + 60 * 60000); // Adds 60 minutes
+        const [year, month, day] = date.split('-').map(Number);
+        const [hours, minutes, seconds] = time.split(':').map(Number);
+
+        // Create the Date object using UTC to avoid time zone issues
+        const appointmentStart = new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds));
+        if (isNaN(appointmentStart.getTime())) {
+            throw new Error("Invalid date or time format");
+        }
+
+        const appointmentEnd = new Date(appointmentStart.getTime() + 60 * 60 * 1000);
+
+        const formattedDate = appointmentStart.toISOString().split('T')[0];
+        const formattedTime = appointmentStart.toISOString().split('T')[1].split('.')[0];
+        const formattedEndTime = appointmentEnd.toISOString().split('T')[1].split('.')[0];
+
+        console.log("Formatted date and time:", { formattedDate, formattedTime, formattedEndTime });
 
         // Check for valid operation hours: 8 AM to 8 PM, excluding 12 PM to 1 PM
         // const hour = appointmentStart.getHours();
@@ -25,27 +39,19 @@ exports.bookAppointment = async (patientId, doctorId, date, time, file) => {
         // }
 
         // Check for existing appointments that might conflict
-        const conflicts = await appointmentModel.checkForConflictingAppointments(doctorId, date, appointmentStart);
+        const conflicts = await appointmentModel.checkForConflictingAppointments(doctorId, date, formattedTime);
         if (conflicts) {
             return { error: true, message: 'Time slot is already booked. Please choose another time.' };
-        }
-
-        let fileName;
-
-        try {
-            fileName = await medicalRecordModel.storeMedicalRecord(patientId, file);
-        } catch (error) {
-            console.error('Error uploading medical record:', error);
-            throw new Error('Service failed to upload medical record.');
         }
 
         // If no conflicts and valid time, book the appointment
         const appointment = await appointmentModel.createAppointment({
             patientId,
             doctorId,
-            date: appointmentStart.toISOString(),
-            time: appointmentStart.toISOString(),
-            endTime: appointmentEnd.toISOString(),
+            date: formattedDate,
+            startTime: formattedTime,
+            endTime: formattedEndTime,
+            appointmentStart: appointmentStart,
             status: 'pending',
             fileName: fileName,
             description: description
@@ -72,8 +78,8 @@ exports.getAllAppointments = async (patientId) => {
         const appointments = await appointmentModel.getAppointmentsByPatient(patientId);
         return { error: false, data: { appointments: appointments } };
     } catch (error) {
-        console.error('Error cancelling appointment:', error);
-        throw new Error('Service failed to cancel appointment.');
+        console.error('Error fetching appointment:', error);
+        throw new Error('Service failed to fetch patient appointments.');
     }
 };
 

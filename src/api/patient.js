@@ -1,11 +1,25 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
 const patientController = require('../controllers/patientController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
 
 // Middleware to ensure the user is authenticated and is a patient
 router.use(verifyToken);
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'public/uploads'); // Ensure this path is correct
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + file.originalname;
+      cb(null, uniqueSuffix);
+    },
+  });
+  
+const upload = multer({ storage: storage });
 
 /**
  * @openapi
@@ -75,7 +89,7 @@ router.get('/doctors', patientController.listDoctors);
  *                     appointmentId:
  *                       type: string
  */
-router.post('/appointments/book', patientController.bookAppointment);
+router.post('/appointments/book', upload.single('file'), patientController.bookAppointment);
 
 /**
  * @openapi
@@ -327,7 +341,7 @@ router.get('/medical-records', patientController.getMedicalRecords);
  */
 router.get('/medical-records/download/:id', patientController.downloadMedicalRecord);
 
-router.get('/appointments', patientController.getAllAppointments);
+router.get('/appointments/all', patientController.getAllAppointments);
 
 router.get('/appointments/:id', patientController.getAppointment);
 

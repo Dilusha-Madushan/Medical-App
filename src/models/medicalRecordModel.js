@@ -2,7 +2,9 @@ const { storage } = require('../config/firebaseConfig'); // Ensure you have a Fi
 
 exports.storeMedicalRecord = async (patientId, file) => {
     const filePath = `medicalRecords/${patientId}/${file.originalname}`;
+    console.log(filePath)
     const fileRef = storage.bucket().file(filePath);
+    console.log(fileRef)
     await fileRef.save(file.buffer);
     return file.originalname;
 };

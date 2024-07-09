@@ -26,7 +26,7 @@ exports.checkForConflictingAppointments = async (doctorId, date, startTime) => {
     const appointments = await db.collection('appointments')
         .where('doctorId', '==', doctorId)
         .where('date', '==', date)
-        .where('time', '==', startTime)
+        .where('startTime', '==', startTime)
         .get();
 
     return appointments.docs.some(appointment => {
@@ -46,9 +46,9 @@ exports.getAppointmentsByDoctor = async (doctorId) => {
 exports.getAppointmentsByPatient = async (patientId) => {
     const snapshot = await db.collection('appointments')
         .where('patientId', '==', patientId)
-        .orderBy('date', 'desc')
         .get();
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return data.sort((a, b) => new Date(a.appointmentStart) - new Date(b.appointmentStart));
 };
 
 exports.getAppointmentByPatient = async (patientId, appointmentId) => {
